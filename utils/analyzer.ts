@@ -26,7 +26,24 @@ export function analyzeTrades(trades: Trade[]): AnalysisResult {
     
     // 日付形式を統一（YYYY-MM-DD HH:mm:ss）
     const [datePart, timePart] = date.split(' ');
-    const [year, month, day] = datePart.split(/[-\/]/).map(n => n.padStart(2, '0'));
+    let year, month, day;
+    
+    // 日付のパース（MM/DD/YYYY形式）
+    const parts = datePart.split('/');
+    [day, month, year] = parts;  // 月と日を逆に
+    
+    // 数値に変換して2桁の文字列に
+    month = String(parseInt(month, 10)).padStart(2, '0');
+    day = String(parseInt(day, 10)).padStart(2, '0');
+    year = String(parseInt(year, 10));
+    
+    // 日付の妥当性チェック
+    const dateObj = new Date(`${year}-${month}-${day}`);
+    if (isNaN(dateObj.getTime())) {
+      console.error(`無効な日付です: ${datePart}`);
+      throw new Error(`無効な日付です: ${datePart}`);
+    }
+    
     const time = timePart ? timePart.split(':').map(n => n.padStart(2, '0')).join(':') : '00:00:00';
     const cleanDate = `${year}-${month}-${day} ${time}`;
     
@@ -208,6 +225,7 @@ export function analyzeTrades(trades: Trade[]): AnalysisResult {
     .map(t => {
       try {
         const date = new Date(t.cleanDate);
+        console.log('変換前の日付:', t['日付'], '変換後の日付:', t.cleanDate);
         return isNaN(date.getTime()) ? null : date;
       } catch {
         return null;
@@ -219,8 +237,14 @@ export function analyzeTrades(trades: Trade[]): AnalysisResult {
     throw new Error('有効な日付データが見つかりませんでした');
   }
 
-  const startDate = new Date(Math.min(...validDates.map(d => d.getTime()))).toISOString();
-  const endDate = new Date(Math.max(...validDates.map(d => d.getTime()))).toISOString();
+  // 日本時間に変換して日付のみを取得
+  const startDate = new Date(Math.min(...validDates.map(d => d.getTime())))
+    .toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' });
+  const endDate = new Date(Math.max(...validDates.map(d => d.getTime())))
+    .toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' });
+
+  console.log('最終的な開始日:', startDate);
+  console.log('最終的な終了日:', endDate);
 
   // 利益の計算
   const profits = tradesWithResult.map(trade => {
