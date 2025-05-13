@@ -9,24 +9,24 @@ Font.register({
 
 const styles = StyleSheet.create({
   page: {
-    padding: 20,
+    padding: 15,
     fontSize: 10,
     fontFamily: 'NotoSansJP',
   },
   title: {
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 7,
     textAlign: 'center',
     fontWeight: 'bold',
   },
   section: {
-    marginBottom: 10,
+    marginBottom: 7,
     borderBottom: '1px solid #eee',
     paddingBottom: 5,
   },
   sectionTitle: {
-    fontSize: 14,
-    marginBottom: 6,
+    fontSize: 12,
+    marginBottom: 4,
     fontWeight: 'bold',
     backgroundColor: '#f5f5f5',
     padding: 5,
@@ -149,7 +149,7 @@ export const TradeAnalysisPDF = ({ data }: TradeAnalysisPDFProps) => {
           <View style={styles.row}>
             <Text style={styles.label}>総損益:</Text>
             <Text style={[styles.value, data.summary.totalProfit >= 0 ? styles.positiveValue : styles.negativeValue]}>
-              {formatCurrency(data.summary.totalProfit)}
+              {data.summary.totalProfit >= 0 ? '+' : ''}{formatCurrency(data.summary.totalProfit)}
             </Text>
           </View>
           <View style={styles.row}>
@@ -161,9 +161,13 @@ export const TradeAnalysisPDF = ({ data }: TradeAnalysisPDFProps) => {
             <Text style={[styles.value, styles.negativeValue]}>{formatCurrency(Math.abs(data.summary.averageLoss))}</Text>
           </View>
           <View style={styles.row}>
+            <Text style={styles.label}>平均購入金額:</Text>
+            <Text style={styles.value}>{formatCurrency(data.summary.averageAmount)}</Text>
+          </View>
+          <View style={styles.row}>
             <Text style={styles.label}>期待値（1回あたり）:</Text>
             <Text style={[styles.value, (data.summary.totalProfit / data.summary.total) >= 0 ? styles.positiveValue : styles.negativeValue]}>
-              {formatCurrency(data.summary.totalProfit / data.summary.total)}
+              {(data.summary.totalProfit / data.summary.total) >= 0 ? '+' : ''}{formatCurrency(data.summary.totalProfit / data.summary.total)}
             </Text>
           </View>
         </View>

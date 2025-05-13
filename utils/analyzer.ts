@@ -259,6 +259,42 @@ export function analyzeTrades(trades: Trade[]): AnalysisResult {
   const averageProfit = profits.filter(p => p > 0).reduce((sum, p) => sum + p, 0) / wins;
   const averageLoss = profits.filter(p => p < 0).reduce((sum, p) => sum + p, 0) / losses;
 
+  // 購入金額の分布を計算
+  const amountDistribution = tradesWithResult.reduce((acc, trade) => {
+    const amount = Number(trade.購入金額.replace(/[^0-9.-]+/g, ''));
+    const key = `¥${amount.toLocaleString()}`;
+    if (!acc[key]) {
+      acc[key] = {
+        amount,
+        count: 0,
+        wins: 0,
+        losses: 0
+      };
+    }
+    acc[key].count++;
+    if (trade.result === '勝ち') {
+      acc[key].wins++;
+    } else if (trade.result === '負け') {
+      acc[key].losses++;
+    }
+    return acc;
+  }, {} as Record<string, { amount: number; count: number; wins: number; losses: number }>);
+
+  // 分布データを配列に変換
+  const amountDistributionData = Object.entries(amountDistribution)
+    .map(([key, data]) => ({
+      amount: key,
+      count: data.count,
+      wins: data.wins,
+      losses: data.losses,
+      winRate: (data.wins / data.count) * 100
+    }))
+    .sort((a, b) => {
+      const amountA = Number(a.amount.replace(/[^0-9.-]+/g, ''));
+      const amountB = Number(b.amount.replace(/[^0-9.-]+/g, ''));
+      return amountA - amountB;
+    });
+
   return {
     summary: {
       total,
@@ -269,7 +305,8 @@ export function analyzeTrades(trades: Trade[]): AnalysisResult {
       endDate,
       averageProfit,
       averageLoss,
-      totalProfit
+      totalProfit,
+      averageAmount: tradesWithResult.reduce((sum, trade) => sum + Number(trade.購入金額.replace(/[^0-9.-]+/g, '')), 0) / total
     },
     highLow: [
       { name: 'HIGH', wins: highWins, losses: highTrades.length - highWins, total: highTrades.length, winRate: (highWins / highTrades.length) * 100 },
@@ -282,6 +319,7 @@ export function analyzeTrades(trades: Trade[]): AnalysisResult {
       topHours,
       worstHours
     },
-    monthlyAnalysis
+    monthlyAnalysis,
+    amountDistribution: amountDistributionData
   };
 }

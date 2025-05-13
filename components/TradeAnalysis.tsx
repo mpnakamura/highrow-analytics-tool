@@ -133,7 +133,7 @@ export default function TradeAnalysis({ data }: TradeAnalysisProps) {
                   <BarChart
                     data={highLow.map(item => ({
                       ...item,
-                      winRate: Math.round(item.winRate * 100) / 100
+                      winRate: Math.ceil(item.winRate)
                     }))}
                     margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >
@@ -154,6 +154,40 @@ export default function TradeAnalysis({ data }: TradeAnalysisProps) {
                 </ResponsiveContainer>
               </div>
             </div>
+
+            <div className="card">
+              <h3 className="text-xl font-bold mb-4">購入金額の分布</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={data.amountDistribution}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                    <XAxis dataKey="amount" stroke="var(--foreground)" />
+                    <YAxis stroke="var(--foreground)" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'var(--card)',
+                        color: 'var(--card-foreground)',
+                        border: '1px solid var(--border)'
+                      }}
+                      formatter={(value: number, name: string) => {
+                        if (name === 'wins') {
+                          return [value, '勝ち'];
+                        } else if (name === 'losses') {
+                          return [value, '負け'];
+                        }
+                        return [value, name];
+                      }}
+                    />
+                    <Legend />
+                    <Bar name="勝ち" dataKey="wins" stackId="a" fill="#10b981" />
+                    <Bar name="負け" dataKey="losses" stackId="a" fill="#ef4444" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         )}
         
@@ -166,7 +200,7 @@ export default function TradeAnalysis({ data }: TradeAnalysisProps) {
                   <BarChart
                     data={hourly.filter(h => h.total >= 5).sort((a, b) => b.winRate - a.winRate).map(item => ({
                       ...item,
-                      winRate: Math.round(item.winRate * 100) / 100
+                      winRate: Math.ceil(item.winRate)
                     }))}
                     margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >
@@ -224,7 +258,7 @@ export default function TradeAnalysis({ data }: TradeAnalysisProps) {
                   <BarChart
                     data={dateStats.map(item => ({
                       ...item,
-                      winRate: Math.round(item.winRate * 100) / 100
+                      winRate: Math.ceil(item.winRate)
                     }))}
                     margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >
@@ -278,7 +312,7 @@ export default function TradeAnalysis({ data }: TradeAnalysisProps) {
                   <BarChart
                     data={dateHourStats.filter(d => d.total >= 3).sort((a, b) => b.winRate - a.winRate).map(item => ({
                       ...item,
-                      winRate: Math.round(item.winRate * 100) / 100
+                      winRate: Math.ceil(item.winRate)
                     }))}
                     margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >

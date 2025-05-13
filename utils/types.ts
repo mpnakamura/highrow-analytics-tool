@@ -51,6 +51,14 @@ export interface Trade {
     winRate: number;
   }
   
+  export interface AmountDistribution {
+    amount: string;
+    count: number;
+    wins: number;
+    losses: number;
+    winRate: number;
+  }
+  
   export interface AnalysisResult {
     summary: {
       total: number;
@@ -62,6 +70,7 @@ export interface Trade {
       averageProfit: number;
       averageLoss: number;
       totalProfit: number;
+      averageAmount: number;
     };
     highLow: HighLowStats[];
     hourly: HourlyStats[];
@@ -78,6 +87,7 @@ export interface Trade {
         totalProfit: number;
       };
     };
+    amountDistribution: AmountDistribution[];
   }
   
   export interface ChartDataItem {
