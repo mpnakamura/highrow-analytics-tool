@@ -74,12 +74,15 @@ export default function TradeAnalysis({ data }: TradeAnalysisProps) {
     }).format(value);
   };
 
-  const totalInvestment = 357000;
-  const totalPayout = 416100;
-  const totalProfit = 59100;
-  const averageProfit = 1900;
-  const averageLoss = 1000;
-  const averageAmount = 1000;
+  // CSVから計算された値を使用する
+  const {
+    totalInvestment,
+    totalPayout,
+    totalProfit,
+    averageProfit,
+    averageLoss,
+    averageAmount,
+  } = summary;
   const expectedValue = totalProfit / summary.total;
 
   return (
@@ -131,7 +134,8 @@ export default function TradeAnalysis({ data }: TradeAnalysisProps) {
           <div className="bg-[var(--muted)] text-[var(--muted-foreground)] p-4 rounded">
             <p className="text-[var(--muted-foreground)]">純損益</p>
             <p className="text-2xl font-bold text-[var(--success)]">
-              +{formatCurrency(totalProfit)}
+              {totalProfit >= 0 ? "+" : ""}
+              {formatCurrency(totalProfit)}
             </p>
           </div>
           <div className="bg-[var(--muted)] text-[var(--muted-foreground)] p-4 rounded">
@@ -143,7 +147,7 @@ export default function TradeAnalysis({ data }: TradeAnalysisProps) {
           <div className="bg-[var(--muted)] text-[var(--muted-foreground)] p-4 rounded">
             <p className="text-[var(--muted-foreground)]">平均損失</p>
             <p className="text-2xl font-bold text-[var(--danger)]">
-              {formatCurrency(averageLoss)}
+              {formatCurrency(Math.abs(averageLoss))}
             </p>
           </div>
           <div className="bg-[var(--muted)] text-[var(--muted-foreground)] p-4 rounded">
@@ -157,7 +161,8 @@ export default function TradeAnalysis({ data }: TradeAnalysisProps) {
               期待値（1回あたり）
             </p>
             <p className="text-2xl font-bold text-[var(--success)]">
-              +{formatCurrency(expectedValue)}
+              {expectedValue >= 0 ? "+" : ""}
+              {formatCurrency(expectedValue)}
             </p>
           </div>
         </div>

@@ -126,8 +126,16 @@ export const TradeAnalysisPDF = ({ data }: TradeAnalysisPDFProps) => {
     }).format(value);
   };
 
-  // 正しい損益計算
-  const correctTotalProfit = 59100; // 実データから計算した正確な値
+  // CSVから計算された値を使用する
+  const {
+    totalInvestment,
+    totalPayout,
+    totalProfit,
+    averageProfit,
+    averageLoss,
+    averageAmount,
+  } = data.summary;
+  const expectedValue = totalProfit / data.summary.total;
 
   return (
     <Document>
@@ -162,54 +170,52 @@ export const TradeAnalysisPDF = ({ data }: TradeAnalysisPDFProps) => {
           <Text style={styles.sectionTitle}>損益分析</Text>
           <View style={styles.row}>
             <Text style={styles.label}>総投資額:</Text>
-            <Text style={styles.value}>{formatCurrency(357000)}</Text>
+            <Text style={styles.value}>{formatCurrency(totalInvestment)}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>総ペイアウト:</Text>
-            <Text style={styles.value}>{formatCurrency(416100)}</Text>
+            <Text style={styles.value}>{formatCurrency(totalPayout)}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>純損益:</Text>
             <Text
               style={[
                 styles.value,
-                correctTotalProfit >= 0
-                  ? styles.positiveValue
-                  : styles.negativeValue,
+                totalProfit >= 0 ? styles.positiveValue : styles.negativeValue,
               ]}
             >
-              {correctTotalProfit >= 0 ? "+" : ""}
-              {formatCurrency(correctTotalProfit)}
+              {totalProfit >= 0 ? "+" : ""}
+              {formatCurrency(totalProfit)}
             </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>平均利益:</Text>
             <Text style={[styles.value, styles.positiveValue]}>
-              {formatCurrency(1900)}
+              {formatCurrency(averageProfit)}
             </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>平均損失:</Text>
             <Text style={[styles.value, styles.negativeValue]}>
-              {formatCurrency(1000)}
+              {formatCurrency(Math.abs(averageLoss))}
             </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>平均購入金額:</Text>
-            <Text style={styles.value}>{formatCurrency(1000)}</Text>
+            <Text style={styles.value}>{formatCurrency(averageAmount)}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>期待値（1回あたり）:</Text>
             <Text
               style={[
                 styles.value,
-                correctTotalProfit / data.summary.total >= 0
+                expectedValue >= 0
                   ? styles.positiveValue
                   : styles.negativeValue,
               ]}
             >
-              {correctTotalProfit / data.summary.total >= 0 ? "+" : ""}
-              {formatCurrency(correctTotalProfit / data.summary.total)}
+              {expectedValue >= 0 ? "+" : ""}
+              {formatCurrency(expectedValue)}
             </Text>
           </View>
         </View>
